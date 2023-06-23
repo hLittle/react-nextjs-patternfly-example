@@ -1,10 +1,16 @@
-export function getSummary() {
-  return fetch(`${process.env.NEXT_PUBLIC_API_URL}/summary`, {
+export async function getSummary() {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/summary`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       "Wanikani-Revision": "20170710",
       Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_KEY}`,
     },
-  }).then((res) => res.json());
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch summary");
+  }
+
+  return response.json();
 }

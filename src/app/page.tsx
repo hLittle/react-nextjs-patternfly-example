@@ -1,7 +1,5 @@
 "use client";
 
-import "@patternfly/react-core/dist/styles/base.css";
-import "@/app/global.css";
 import {
   Button,
   Masthead,
@@ -19,20 +17,39 @@ import {
   Toolbar,
   ToolbarContent,
   ToolbarItem,
+  Bullseye,
+  TextInput,
+  DescriptionList,
+  DescriptionListTerm,
+  DescriptionListGroup,
+  DescriptionListDescription,
+  Flex,
+  FlexItem,
 } from "@patternfly/react-core";
 import { BarsIcon, HomeIcon } from "@patternfly/react-icons";
 import { useState } from "react";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import { getSummary } from "@/api/summary";
+import { getSubject } from "@/api/subjects";
+import { Character } from "@/app/components/Character";
 
 export default function Home() {
   const [isNavOpen, setIsNavOpen] = useState(false);
 
-  const queryClient = useQueryClient();
-
   const summary = useQuery("reviews", getSummary, {
     staleTime: 1000 * 60 * 60,
   });
+
+  let firstReviewId = summary?.data?.data?.reviews?.[0]?.subject_ids?.[0];
+
+  const subject = useQuery(
+    ["subject", firstReviewId],
+    () => getSubject(firstReviewId),
+    {
+      enabled: typeof firstReviewId === "number",
+      staleTime: 1000 * 60 * 60 * 24 * 30,
+    }
+  );
 
   const onNavToggle = () => {
     setIsNavOpen(!isNavOpen);
@@ -92,16 +109,40 @@ export default function Home() {
           </ToolbarContent>
         </Toolbar>
       </PageSection>
-      <PageSection>
+      <PageSection variant="light">
         <TextContent>
           <Text component="h2">Summary</Text>
-          <Text component="p">
-            # Lessions: {summary?.data?.data?.lessons?.[0]?.subject_ids?.length}
-          </Text>
-          <Text component="p">
-            # Reviews: {summary?.data?.data?.reviews?.[0]?.subject_ids?.length}
-          </Text>
         </TextContent>
+        <DescriptionList>
+          <DescriptionListGroup>
+            <DescriptionListTerm>Lessions</DescriptionListTerm>
+            <DescriptionListDescription>
+              {summary?.data?.data?.lessons?.[0]?.subject_ids?.length}
+            </DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
+            <DescriptionListTerm>Reviews</DescriptionListTerm>
+            <DescriptionListDescription>
+              {summary?.data?.data?.reviews?.[0]?.subject_ids?.length}
+            </DescriptionListDescription>
+          </DescriptionListGroup>
+        </DescriptionList>
+      </PageSection>
+      <PageSection variant="light">
+        <TextContent>
+          <Text component="h2">Next Review Item</Text>
+        </TextContent>
+        <Flex
+          direction={{ default: "column" }}
+          alignItems={{ default: "alignItemsCenter" }}
+        >
+          <Character component="p">{subject?.data?.data?.characters}</Character>
+          <FlexItem>
+            <TextContent>
+              <TextInput />
+            </TextContent>
+          </FlexItem>
+        </Flex>
       </PageSection>
     </Page>
   );

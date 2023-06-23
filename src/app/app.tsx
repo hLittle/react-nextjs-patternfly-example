@@ -1,6 +1,7 @@
 "use client";
 
 import "@patternfly/react-core/dist/styles/base.css";
+import "@patternfly/react-styles/css/utilities/Text/text.css";
 import "@/app/global.css";
 import { QueryClient, QueryClientProvider } from "react-query";
 
