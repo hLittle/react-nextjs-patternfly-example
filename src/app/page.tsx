@@ -2,40 +2,23 @@
 
 import {
   Button,
-  Masthead,
-  MastheadMain,
-  MastheadToggle,
-  Page,
   PageSection,
-  PageSidebar,
-  PageToggleButton,
   TextContent,
   Text,
-  Nav,
-  NavList,
-  NavItem,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
-  Bullseye,
-  TextInput,
   DescriptionList,
   DescriptionListTerm,
   DescriptionListGroup,
   DescriptionListDescription,
-  Flex,
-  FlexItem,
 } from "@patternfly/react-core";
-import { BarsIcon, HomeIcon } from "@patternfly/react-icons";
-import { useState } from "react";
 import { useQuery } from "react-query";
 import { getSummary } from "@/api/summary";
 import { getSubject } from "@/api/subjects";
-import { Character } from "@/app/components/Character";
+import DefaultLayout from "@/components/DefaultLayout";
 
 export default function Home() {
-  const [isNavOpen, setIsNavOpen] = useState(false);
-
   const summary = useQuery("reviews", getSummary, {
     staleTime: 1000 * 60 * 60,
   });
@@ -51,47 +34,8 @@ export default function Home() {
     }
   );
 
-  const onNavToggle = () => {
-    setIsNavOpen(!isNavOpen);
-  };
-
-  const header = (
-    <Masthead>
-      <MastheadToggle>
-        <PageToggleButton
-          aria-label="Global navigation"
-          variant="plain"
-          isNavOpen={isNavOpen}
-          onNavToggle={onNavToggle}
-          id="vertical-nav-toggle"
-        >
-          <BarsIcon />
-        </PageToggleButton>
-      </MastheadToggle>
-      <MastheadMain>
-        <MastheadMain href="/">
-          <HomeIcon />
-        </MastheadMain>
-      </MastheadMain>
-    </Masthead>
-  );
-
-  const nav = (
-    <Nav>
-      <NavList>
-        <NavItem itemId={0} isActive to={"/"}>
-          Some link
-        </NavItem>
-      </NavList>
-    </Nav>
-  );
-
-  const sidebar = (
-    <PageSidebar nav={nav} isNavOpen={isNavOpen} id="vertical-sidebar" />
-  );
-
   return (
-    <Page header={header} sidebar={sidebar}>
+    <DefaultLayout>
       <PageSection variant="light">
         <TextContent>
           <Text component="h1">Heidi&apos;s Innovation Project 2023</Text>
@@ -128,22 +72,6 @@ export default function Home() {
           </DescriptionListGroup>
         </DescriptionList>
       </PageSection>
-      <PageSection variant="light">
-        <TextContent>
-          <Text component="h2">Next Review Item</Text>
-        </TextContent>
-        <Flex
-          direction={{ default: "column" }}
-          alignItems={{ default: "alignItemsCenter" }}
-        >
-          <Character component="p">{subject?.data?.data?.characters}</Character>
-          <FlexItem>
-            <TextContent>
-              <TextInput />
-            </TextContent>
-          </FlexItem>
-        </Flex>
-      </PageSection>
-    </Page>
+    </DefaultLayout>
   );
 }
